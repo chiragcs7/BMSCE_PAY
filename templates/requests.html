@@ -1,0 +1,32 @@
+{% extends "layout_logged_in.html" %}
+{% block page_title %}Requests{% endblock %}
+
+{% block page_content %}
+<div class="section-card">
+  <h2 class="section-title">Money requests</h2>
+  <p class="section-subtitle">
+    These users have requested money from you.
+  </p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>From</th>
+        <th>Amount</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in requests %}
+      <tr>
+        <td>{{ r.from_upi }}</td>
+        <td>₹ {{ "%.2f"|format(r.amount) }}</td>
+        <td>{{ r.note or "-" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3">No pending requests.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -7,6 +7,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import pyrebase
 import firebase_admin
 from firebase_admin import credentials, firestore
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g
+from firebase_admin import credentials, firestore
+
 
 app = Flask(__name__)
 app.secret_key = "super-secret-key-change-this"
@@ -309,6 +313,107 @@ def make_transaction():
 
 
     return render_template("make_transaction.html", user=user, prefill={})
+
+@app.route("/receive", methods=["GET", "POST"])
+def receive():
+    """Page where user can create a money request to another user."""
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        to_identifier = request.form.get("to_identifier", "").strip()  # UPI or phone
+        amount_raw = request.form.get("amount", "0").strip()
+        note = request.form.get("note", "").strip()
+
+        try:
+            amount = float(amount_raw or 0)
+        except ValueError:
+            amount = 0.0
+
+        if not to_identifier or amount <= 0:
+            flash("Enter a valid UPI / phone and amount.", "danger")
+            return redirect(url_for("receive"))
+
+        # Check that the target user exists by UPI ID or phone
+        recv_doc = None
+
+        # 1) by upi_id
+        q_upi = (
+            db.collection("users")
+            .where("upi_id", "==", to_identifier)
+            .limit(1)
+            .stream()
+        )
+        for d in q_upi:
+            recv_doc = d
+            break
+
+        # 2) if not found, by phone
+        if not recv_doc:
+            q_phone = (
+                db.collection("users")
+                .where("phone", "==", to_identifier)
+                .limit(1)
+                .stream()
+            )
+            for d in q_phone:
+                recv_doc = d
+                break
+
+        if not recv_doc:
+            flash("No user found with that UPI ID or phone number.", "danger")
+            return redirect(url_for("receive"))
+
+        recv_user = recv_doc.to_dict()
+        recv_upi = recv_user.get("upi_id", "")
+
+        # Create a pending request document
+        req_doc = {
+            "from_user_id": user["id"],       # requester
+            "from_upi": user["upi_id"],
+            "to_user_id": recv_doc.id,        # who should pay
+            "to_upi": recv_upi,
+            "to_identifier": to_identifier,   # what was typed
+            "amount": amount,
+            "note": note,
+            "status": "pending",
+            "timestamp": datetime.utcnow(),
+        }
+        db.collection("requests").add(req_doc)
+
+        flash("Money request sent.", "success")
+        return redirect(url_for("dashboard"))
+
+    return render_template("receive.html", user=user)
+
+@app.route("/requests")
+def requests_page():
+    """Show money requests where the current user is the target."""
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    uid = user["id"]
+    upi = user.get("upi_id", "")
+
+    # Fetch pending requests where this user is the receiver
+    q = (
+        db.collection("requests")
+        .where("to_user_id", "==", uid)
+        .where("status", "==", "pending")
+        .stream()
+    )
+
+    requests_list = []
+    for r in q:
+        d = r.to_dict()
+        d["id"] = r.id
+        requests_list.append(d)
+
+    return render_template("requests.html", user=user, requests=requests_list)
+
+
 
 @app.route("/history")
 def history():

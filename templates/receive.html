@@ -1,0 +1,24 @@
+{% extends "layout_logged_in.html" %}
+{% block page_title %}Receive{% endblock %}
+
+{% block page_content %}
+<div class="section-card" style="max-width: 480px; margin: 0 auto;">
+  <h2 class="section-title">Request money</h2>
+  <p class="section-subtitle">
+    Ask another BMSCE Pay user to send you money by UPI ID or phone.
+  </p>
+
+  <form method="POST" class="form-vertical">
+    <label>Friend's UPI ID or Phone</label>
+    <input type="text" name="to_identifier" required>
+
+    <label>Amount (₹)</label>
+    <input type="number" step="0.01" name="amount" required>
+
+    <label>Note</label>
+    <input type="text" name="note" placeholder="eg. Canteen split, cab share">
+
+    <button type="submit" class="btn-primary full-width">Send request</button>
+  </form>
+</div>
+{% endblock %}
