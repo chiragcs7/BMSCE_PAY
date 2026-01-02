@@ -1,0 +1,96 @@
+{% extends "layout_logged_out.html" %}
+
+{% block page_content %}
+<div class="auth-shell">
+  <div class="auth-card light-card wide-card">
+    <div class="auth-header">
+      <img src="{{ url_for('static', filename='img/bmslogo.jpg') }}" class="auth-logo" alt="BMSCE">
+      <div>
+        <h2 class="auth-title-main">Create BMSCE Pay Account</h2>
+        <p class="auth-subtitle">Tell us about you to personalise services</p>
+      </div>
+    </div>
+
+    <!-- Step 1: basic academic details -->
+    <h3 class="auth-section-title">Step 1 · College details</h3>
+    <form method="POST" class="grid-form">
+      <div>
+        <label>Name</label>
+        <input type="text" name="name" required>
+      </div>
+      <div>
+        <label>College ID</label>
+        <input type="text" name="college_id" required>
+      </div>
+      <div>
+        <label>Phone</label>
+        <input type="tel" name="phone" required>
+      </div>
+      <div>
+        <label>USN</label>
+        <input type="text" name="usn" required>
+      </div>
+      <div>
+        <label>Branch / Class</label>
+        <input type="text" name="class" placeholder="CSE A, ISE B, etc." required>
+      </div>
+      <div>
+        <label>Semester</label>
+        <select name="semester" required>
+          <option value="" disabled selected>Select semester</option>
+          {% for i in range(1,9) %}
+          <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Year</label>
+        <select name="year" required>
+          <option value="" disabled selected>Select year</option>
+          <option value="1">1st year</option>
+          <option value="2">2nd year</option>
+          <option value="3">3rd year</option>
+          <option value="4">4th year</option>
+        </select>
+      </div>
+
+      <!-- Step 2: security & more details -->
+      <div>
+        <label>PIN (4 digits)</label>
+        <input type="password" name="pin" maxlength="4" required>
+      </div>
+      <div>
+        <label>Login password</label>
+        <input type="password" name="password" required>
+      </div>
+      <div>
+        <label>Hostel / Day scholar</label>
+        <select name="residence_type">
+          <option value="day">Day scholar</option>
+          <option value="hostel">Hostel</option>
+        </select>
+      </div>
+      <div>
+        <label>Food preference</label>
+        <select name="food_pref">
+          <option value="veg">Veg</option>
+          <option value="non-veg">Non‑veg</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+      <div>
+        <label>Primary payment use</label>
+        <select name="primary_use">
+          <option value="canteen">Canteen</option>
+          <option value="books">Books & stationery</option>
+          <option value="fees">Fees</option>
+          <option value="events">Club & events</option>
+          <option value="mixed">Mixed</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-primary full-width">Create account</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

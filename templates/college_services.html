@@ -1,0 +1,26 @@
+{% extends "layout_logged_in.html" %}
+{% block page_title %}College Services{% endblock %}
+
+{% block page_content %}
+<div class="section-card">
+  <h2 class="section-title">Pay for campus services</h2>
+  <p class="section-subtitle">
+    Quick payments to canteen, bookmart, vending machines, college fees and club events.
+  </p>
+
+  <div class="service-grid">
+    {% for s in services %}
+    <div class="service-card">
+      <div class="service-icon">
+        <img src="{{ url_for('static', filename='img/' ~ s.image) }}" alt="{{ s.name }}">
+      </div>
+      <div class="service-name">{{ s.name }}</div>
+      <a href="{{ url_for('pay_service', code=s.code) }}" class="btn-primary service-btn" style="display:block; text-align:center;">
+  Pay {{ s.name }}
+</a>
+
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

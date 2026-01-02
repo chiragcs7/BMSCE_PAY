@@ -1,0 +1,104 @@
+{% extends "layout_logged_in.html" %}
+{% block page_title %}Analytics{% endblock %}
+
+{% block page_content %}
+<div class="section-grid">
+  <div class="section-card small-chart-card">
+    <h2 class="section-title">Spending trend</h2>
+    <p class="section-subtitle">Monthly expense overview</p>
+    <div class="chart-wrapper">
+      <canvas id="expenseChart"></canvas>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="section-title">Summary</h2>
+    <div class="insights-row">
+      <div class="insight-item">
+        <span class="insight-label">Total sent (all time)</span>
+        <span class="insight-value negative" id="totalSentText">₹ 0.00</span>
+      </div>
+      <div class="insight-item">
+        <span class="insight-label">Total received (all time)</span>
+        <span class="insight-value positive" id="totalReceivedText">₹ 0.00</span>
+      </div>
+      <div class="insight-item">
+        <span class="insight-label">This month spent</span>
+        <span class="insight-value negative" id="monthSpentText">₹ 0.00</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/expense-data")
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) return;
+
+      const ctx = document.getElementById('expenseChart');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: d.labels,
+            datasets: [
+              {
+                label: 'Sent',
+                data: d.sent,
+                backgroundColor: "rgba(239, 68, 68, 0.7)",
+                borderColor: "rgba(220, 38, 38, 1)",
+                borderWidth: 1,
+                borderRadius: 5
+              },
+              {
+                label: 'Received',
+                data: d.received,
+                backgroundColor: "rgba(16, 185, 129, 0.7)",
+                borderColor: "rgba(5, 150, 105, 1)",
+                borderWidth: 1,
+                borderRadius: 5
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: true } },
+            scales: {
+              x: {
+                title: { display: true, text: "Month" }
+              },
+              y: {
+                title: { display: true, text: "Amount (₹)" },
+                grid: { color: "#e5e7eb" }
+              }
+            }
+          }
+        });
+      }
+
+      // Update summary values
+      const totalSentEl = document.getElementById("totalSentText");
+      const totalRecvEl = document.getElementById("totalReceivedText");
+      const monthSpentEl = document.getElementById("monthSpentText");
+
+      if (totalSentEl) {
+        totalSentEl.textContent = "₹ " + d.total_sent.toFixed(2);
+      }
+      if (totalRecvEl) {
+        totalRecvEl.textContent = "₹ " + d.total_received.toFixed(2);
+      }
+      if (monthSpentEl) {
+        monthSpentEl.textContent = "₹ " + d.this_month_spent.toFixed(2);
+      }
+    });
+});
+</script>
+{% endblock %}
+
+
+

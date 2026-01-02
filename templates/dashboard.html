@@ -1,0 +1,150 @@
+{% extends "layout_logged_in.html" %}
+{% block page_title %}Home{% endblock %}
+
+{% block page_content %}
+<div class="dashboard-grid">
+
+  <!-- Wallet card -->
+  <div class="wallet-card">
+    <div class="wallet-header">
+      <span class="wallet-label">Wallet balance</span>
+      <span class="wallet-upi">{{ user.upi_id }}</span>
+    </div>
+    <div class="wallet-amount-row">
+      <span class="currency-symbol">₹</span>
+      <span class="wallet-amount">{{ "%.2f"|format(balance) }}</span>
+    </div>
+    <div class="wallet-actions">
+  <a href="{{ url_for('scan_pay') }}" class="pill-btn primary-btn">
+    <i class="fa-solid fa-qrcode"></i> Scan & Pay
+  </a>
+  <a href="{{ url_for('send') }}" class="pill-btn">
+    <i class="fa-solid fa-arrow-up-right-from-square"></i> Send
+  </a>
+  <a href="{{ url_for('send', to=current_user.upi_id, name=current_user.name) }}" class="pill-btn">
+    <i class="fa-solid fa-arrow-down"></i> Receive
+  </a>
+</div>
+
+  </div>
+
+  <!-- Quick actions tiles -->
+  <div class="quick-actions-card">
+    <h3 class="section-title">Quick Payments</h3>
+    <div class="quick-grid">
+      <a href="{{ url_for('make_transaction') }}" class="quick-tile">
+        <div class="quick-icon pay-bg"><i class="fa-solid fa-user-group"></i></div>
+        <span>To Contact</span>
+      </a>
+      <a href="{{ url_for('college_services') }}" class="quick-tile">
+        <div class="quick-icon bills-bg"><i class="fa-solid fa-receipt"></i></div>
+        <span>Fees & Bills</span>
+      </a>
+      <a href="{{ url_for('history') }}" class="quick-tile">
+        <div class="quick-icon history-bg"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <span>Passbook</span>
+      </a>
+      <a href="{{ url_for('expense_tracker') }}" class="quick-tile">
+        <div class="quick-icon offers-bg"><i class="fa-solid fa-percent"></i></div>
+        <span>Offers</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Insights -->
+<div class="insights-card">
+  <h3 class="section-title">This Month</h3>
+  <div class="insights-row">
+    <div class="insight-item">
+      <span class="insight-label">Total sent</span>
+      <span class="insight-value negative">₹ {{ "%.2f"|format(total_sent) }}</span>
+    </div>
+    <div class="insight-item">
+      <span class="insight-label">Total received</span>
+      <span class="insight-value positive">₹ {{ "%.2f"|format(total_received) }}</span>
+    </div>
+  </div>
+
+  <!-- SMALL CHART AREA -->
+  <div class="chart-wrapper">
+    <canvas id="miniExpenseChart"></canvas>
+  </div>
+</div>
+
+  <!-- Recent transactions -->
+  <div class="transactions-card">
+    <div class="card-header-inline">
+      <h3 class="section-title">Recent transactions</h3>
+      <a href="{{ url_for('history') }}" class="view-all-link">View all</a>
+    </div>
+    <ul class="txn-list">
+      {% for t in latest_txns %}
+      <li class="txn-row">
+        <div class="txn-avatar">
+          <span>{{ t.display_name[:1]|upper }}</span>
+        </div>
+        <div class="txn-main">
+          <div class="txn-top">
+            <span class="txn-name">{{ t.display_name }}</span>
+            <span class="txn-amount {% if t.type=='sent' %}negative{% else %}positive{% endif %}">
+              {% if t.type=='sent' %}-{% else %}+{% endif %}₹ {{ t.amount }}
+            </span>
+          </div>
+          <div class="txn-bottom">
+            <span class="txn-note">{{ t.note or 'No note' }}</span>
+            <span class="txn-time">{{ t.timestamp }}</span>
+          </div>
+        </div>
+      </li>
+      {% else %}
+      <li class="txn-empty">No transactions yet. Start by making your first payment.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const ctx = document.getElementById("miniExpenseChart");
+  if (!ctx) return;
+
+  fetch("/expense-data")
+    .then(r => r.json())
+    .then(d => {
+      const labels = d.labels.length ? d.labels : ["No data"];
+      const values = d.data.length ? d.data : [0];
+
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: "rgba(16, 185, 129, 0.7)",
+            borderColor: "rgba(5, 150, 105, 1)",
+            borderWidth: 1,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              grid: { color: "#e5e7eb" },
+              ticks: { display: false }
+            }
+          }
+        }
+      });
+    });
+});
+</script>
+{% endblock %}
+
+

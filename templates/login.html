@@ -1,0 +1,43 @@
+{% extends "layout_logged_out.html" %}
+
+{% block page_content %}
+<div class="auth-shell">
+  <div class="auth-card light-card login-card-large">
+
+    {# MOVE FLASH MESSAGES HERE #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-container login-flash">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Centered logo -->
+    <div class="login-logo-wrap">
+      <img src="{{ url_for('static', filename='img/bmslogo.jpg') }}" class="auth-logo-big" alt="BMSCE">
+    </div>
+
+    <h2 class="auth-title-main login-title-main">BMSCE Pay</h2>
+    <p class="auth-subtitle login-subtitle">Student UPI Wallet</p>
+
+    <h3 class="auth-section-title">Login</h3>
+    <form method="POST" class="auth-form">
+      <label>USN</label>
+      <input type="text" name="usn" required>
+
+      <label>Password</label>
+      <input type="password" name="password" required>
+
+      <button type="submit" class="btn-primary">Login</button>
+    </form>
+
+    <p class="register-link">
+      New user?
+      <a href="{{ url_for('register') }}">Create an account</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

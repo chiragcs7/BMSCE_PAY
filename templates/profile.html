@@ -1,0 +1,44 @@
+{% extends "layout_logged_in.html" %}
+{% block page_title %}Profile{% endblock %}
+
+{% block page_content %}
+<div class="section-grid profile-grid">
+  <div class="section-card profile-form">
+
+    <h2 class="section-title">Your details</h2>
+
+    <form method="POST" class="grid-form profile-form-fields">
+
+      <div>
+        <label>Name</label>
+        <input type="text" name="name" value="{{ user.name }}">
+      </div>
+      <div>
+        <label>Phone</label>
+        <input type="tel" name="phone" value="{{ user.phone }}">
+      </div>
+      <div>
+        <label>Class</label>
+        <input type="text" name="class" value="{{ user.class }}">
+      </div>
+      <div>
+        <label>Batch</label>
+        <input type="text" name="batch" value="{{ user.batch }}">
+      </div>
+      <div>
+        <label>Year</label>
+        <input type="number" name="year" value="{{ user.year }}">
+      </div>
+      <div>
+        <label>USN (read only)</label>
+        <input type="text" value="{{ user.usn }}" disabled>
+      </div>
+      <div>
+        <label>UPI ID</label>
+        <input type="text" value="{{ user.upi_id }}" disabled>
+      </div>
+      <button type="submit" class="btn-primary full-width">Save changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

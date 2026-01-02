@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-shell">
+  <aside class="paytm-sidebar">
+<div class="sidebar-header">
+  <div class="logo-wrapper">
+    <img src="{{ url_for('static', filename='img/bmslogo.jpg') }}" alt="BMSCE" class="app-logo-img">
+  </div>
+  <div>
+    <div class="app-title">BMSCE Pay</div>
+    <div class="app-subtitle">Student UPI Wallet</div>
+  </div>
+</div>
+
+
+    <nav class="sidebar-menu">
+      <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.endpoint=='dashboard' %}active{% endif %}">
+        <i class="fa-solid fa-house"></i><span>Home</span>
+      </a>
+      <a href="{{ url_for('make_transaction') }}" class="sidebar-link {% if request.endpoint=='make_transaction' %}active{% endif %}">
+        <i class="fa-solid fa-indian-rupee-sign"></i><span>Pay / Send</span>
+      </a>
+      <a href="{{ url_for('history') }}" class="sidebar-link {% if request.endpoint=='history' %}active{% endif %}">
+        <i class="fa-solid fa-clock-rotate-left"></i><span>History</span>
+      </a>
+      <a href="{{ url_for('expense_tracker') }}" class="sidebar-link {% if request.endpoint=='expense_tracker' %}active{% endif %}">
+        <i class="fa-solid fa-chart-line"></i><span>Analytics</span>
+      </a>
+      <a href="{{ url_for('college_services') }}" class="sidebar-link {% if request.endpoint=='college_services' %}active{% endif %}">
+        <i class="fa-solid fa-building-columns"></i><span>College Services</span>
+      </a>
+      <a href="{{ url_for('profile') }}" class="sidebar-link {% if request.endpoint=='profile' %}active{% endif %}">
+        <i class="fa-solid fa-user"></i><span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="{{ url_for('logout') }}" class="sidebar-link logout-link">
+        <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="app-main">
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-title">{% block page_title %}{% endblock %}</div>
+  </div>
+  <div class="topbar-right">
+    <div class="user-pill">
+      <div class="avatar-circle">{{ g.user_initial }}</div>
+      <span class="user-name-short">{{ g.user_short_name }}</span>
+    </div>
+  </div>
+</header>
+
+
+    <section class="page-body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+          {% for category, msg in messages %}
+            <div class="flash flash-{{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block page_content %}{% endblock %}
+    </section>
+  </main>
+</div>
+{% endblock %}

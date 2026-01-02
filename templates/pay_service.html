@@ -1,0 +1,14 @@
+{% extends "layout_logged_in.html" %}
+{% block page_title %}Pay {{ service_name }}{% endblock %}
+
+{% block page_content %}
+<div class="section-card" style="max-width: 480px; margin: 0 auto;">
+  <h2 class="section-title">Pay {{ service_name }}</h2>
+  <p class="section-subtitle">Enter the amount you want to pay.</p>
+  <form method="POST" class="form-vertical">
+    <label>Amount (₹)</label>
+    <input type="number" step="0.01" name="amount" required>
+    <button type="submit" class="btn-primary full-width">Pay {{ service_name }}</button>
+  </form>
+</div>
+{% endblock %}

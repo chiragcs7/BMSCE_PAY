@@ -1,0 +1,899 @@
+/* =============== GLOBAL RESET & BODY =============== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --blue-main: #1e90ff;     /* dodger blue */
+  --blue-dark: #0052cc;
+  --blue-soft: #e0f2ff;
+  --accent-red: #ef4444;
+  --bg-light: #f5f7fb;
+  --text-main: #0f172a;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg-light);
+  color: var(--text-main);
+  font-size: 15px;  /* was default ~14–16, bump a bit */
+}
+
+
+/* =============== APP SHELL (LOGGED IN) =============== */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+/* ---- Sidebar ---- */
+
+.paytm-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+/* Bigger, centered logo on login card */
+.login-card-large {
+  width: 460px;      /* was 420px */
+  padding: 26px 26px 22px;  /* a bit more padding */
+}
+.login-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.auth-logo-big {
+  height: 80px;      /* was ~68px */
+  width: 80px;
+  border-radius: 20px;
+  object-fit: cover;
+  border: 2px solid var(--blue-main);
+  box-shadow: 0 10px 22px rgba(15,23,42,0.45);
+}
+
+
+.login-title-main {
+  text-align: center;
+  margin: 4px 0 0;
+  font-size: 1.35rem;   /* was 1.25rem */
+}
+
+.login-subtitle {
+  text-align: center;
+  margin: 3px 0 14px;
+  font-size: 0.9rem;    /* was 0.85rem */
+  color: #6b7280;
+}
+
+
+.logo-wrapper {
+  height: 40px;
+  width: 40px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid var(--blue-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.app-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.app-subtitle {
+  font-size: 0.78rem;
+  color: #dbeafe;    /* soft light blue */
+}
+
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  color: #e5e7eb;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.08s ease;
+}
+
+.sidebar-link i {
+  width: 18px;
+  text-align: center;
+}
+
+.sidebar-link:hover {
+  background: rgba(255,255,255,0.12);  /* soft white overlay */
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.sidebar-link.active {
+  background: #ffffff;        /* white pill */
+  color: var(--blue-main);    /* blue text/icons */
+}
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.logout-link {
+  color: #ffffff;              /* white text */
+}
+
+.logout-link:hover {
+  color: #e5e7eb;              /* light gray on hover */
+}
+
+
+/* ---- Main area ---- */
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 58px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #0052cc !important;  /* darker blue */
+  border-bottom: none;
+}
+.topbar-title,
+.user-name-short {
+  color: #ffffff;
+}
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15,23,42,0.08);  /* subtle dark pill */
+  border-radius: 999px;
+  padding: 3px 8px 3px 3px;
+}
+.avatar-circle {
+  height: 26px;
+  width: 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--blue-main), var(--blue-dark));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.user-name-short {
+  font-size: 0.86rem;
+  color: #ffffff;
+}
+
+.page-body {
+  padding: 18px 22px 22px;
+}
+
+/* =============== FLASH MESSAGES =============== */
+
+.flash-container {
+  margin-bottom: 12px;
+}
+
+.flash {
+  padding: 9px 11px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+}
+
+.flash-success {
+  background: #ecfdf3;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.flash-danger {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* =============== DASHBOARD (HOME) =============== */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
+  grid-template-rows: auto minmax(260px, auto);
+  gap: 16px;
+  align-items: stretch;
+}
+
+
+/* Wallet card */
+
+.wallet-card {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  position: relative;
+  border-radius: 18px;
+  padding: 18px 20px;
+  color: #ffffff;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--blue-main), var(--blue-dark));
+  box-shadow: 0 18px 30px rgba(37,99,235,0.32);
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  opacity: 0.92;
+}
+
+.wallet-upi {
+  font-weight: 500;
+}
+
+.wallet-amount-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.currency-symbol {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.wallet-amount {
+  font-size: 2.3rem;
+  font-weight: 600;
+}
+
+.wallet-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Modern pill buttons */
+
+.pill-btn,
+.btn-chip {
+  border-radius: 999px;
+  border: none;
+  padding: 7px 14px;
+  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.9);
+  color: var(--blue-dark);
+  box-shadow: 0 3px 8px rgba(15,23,42,0.12);
+  transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.15s ease;
+}
+
+.pill-btn i,
+.btn-chip i {
+  font-size: 0.9rem;
+}
+
+.pill-btn:hover,
+.btn-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15,23,42,0.16);
+  background: #ffffff;
+}
+
+.pill-btn.primary-btn {
+  background: #f97316;
+  color: #ffffff;
+}
+
+/* Cards */
+
+.quick-actions-card,
+.insights-card,
+.transactions-card{
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+
+}
+.section-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.quick-actions-card {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+.insights-card {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  max-height: none;
+
+}
+
+.transactions-card {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.section-subtitle {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+/* Quick payments grid */
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 10px;
+}
+
+.quick-tile {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 0.76rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-icon {
+  height: 42px;
+  width: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(15,23,42,0.15);
+}
+
+.pay-bg    { background: linear-gradient(135deg, var(--blue-main), var(--blue-dark)); }
+.bills-bg  { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.history-bg{ background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.offers-bg { background: linear-gradient(135deg, #f97316, #ea580c); }
+
+/* Insights */
+
+.insights-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.insight-item {
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.insight-label {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.insight-value {
+  display: block;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.insight-value.negative { color: var(--accent-red); }
+.insight-value.positive { color: #16a34a; }
+
+/* Transactions list */
+
+.card-header-inline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.view-all-link {
+  font-size: 0.76rem;
+  color: var(--blue-dark);
+  text-decoration: none;
+}
+
+.txn-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.txn-row {
+  display: flex;
+  gap: 10px;
+  padding: 8px 4px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.txn-row:last-child {
+  border-bottom: none;
+}
+
+.txn-avatar {
+  height: 32px;
+  width: 32px;
+  border-radius: 999px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--blue-dark);
+}
+
+.txn-main { flex: 1; }
+
+.txn-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.84rem;
+}
+
+.txn-name { font-weight: 500; }
+
+.txn-amount { font-weight: 600; }
+
+.txn-amount.negative { color: var(--accent-red); }
+.txn-amount.positive { color: #16a34a; }
+
+.txn-bottom {
+  margin-top: 2px;
+  font-size: 0.72rem;
+  display: flex;
+  justify-content: space-between;
+  color: #6b7280;
+}
+
+/* =============== GENERIC SECTION LAYOUTS =============== */
+
+.section-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.3fr);
+  gap: 16px;
+}
+
+/* Pay / Send form */
+
+.form-vertical label {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+  color: #4b5563;
+}
+
+.form-vertical input {
+  width: 100%;
+  padding: 8px 9px;
+  margin-bottom: 11px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+}
+
+.inline-btn {
+  width: auto;
+  padding-inline: 20px;
+}
+
+/* History tabs + table */
+
+.tabs {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.tab-btn {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: var(--blue-main);
+  color: #ffffff;
+  border-color: var(--blue-main);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.86rem;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table th {
+  background: #f1f5f9;
+  text-align: left;
+}
+
+/* Analytics chart sizing */
+
+.small-chart-card {
+  max-height: 420px;           /* allow a taller card */
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 260px;               /* double the chart height */
+}
+
+/* College services */
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));  /* exactly 3 per row on desktop */
+  gap: 24px;
+  margin-top: 10px;
+}
+
+
+
+.service-card {
+  background: #ffffff;
+  padding: 22px 18px 18px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.service-icon img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.service-name {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.service-btn {
+  width: 100%;
+  padding-inline: 14px;
+}
+
+/* =============== LOGIN & REGISTER (LOGGED OUT) =============== */
+
+/* Logged-out background: full-screen college image with blue overlay */
+.login-wrapper {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(0,0,0,0.45), rgba(15,23,42,0.7)),
+    url("/static/img/bmscollege.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+/* Wrapper to center auth card */
+.auth-shell {
+  max-width: 960px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Light card to match dashboard theme */
+.auth-card.light-card {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 20px 50px rgba(15,23,42,0.45);
+}
+
+.auth-card {
+  border-radius: 18px;
+  padding: 20px 22px 18px;
+}
+
+.auth-card.wide-card {
+  width: 720px;
+}
+
+.auth-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.auth-logo {
+  height: 40px;
+  width: 40px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid var(--blue-main);
+}
+
+.auth-title-main {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.auth-subtitle {
+  font-size: 0.84rem;
+  margin: 0;
+  color: #6b7280;
+}
+
+.auth-section-title {
+  font-size: 1.05rem;   /* bigger */
+  font-weight: 700;     /* thicker */
+  margin: 12px 0 10px;
+}
+
+
+/* Login form inside card */
+.auth-form label {
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 10px 11px;    /* was 8x9 */
+  margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.95rem;    /* bigger text */
+}
+
+.grid-form input,
+.grid-form select {
+  padding: 9px 11px;     /* was 7x9 */
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+
+.grid-form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-form label {
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+  color: #4b5563;
+}
+
+.grid-form input,
+.grid-form select {
+  padding: 7px 9px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #111827;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.86rem;
+}
+
+/* Button already defined; keep it */
+.full-width {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+}
+
+/* Modern primary button */
+
+.btn-primary {
+  background: var(--blue-main);
+  border: none;
+  color: #ffffff;
+  padding: 12px 20px;      /* was 10x18 */
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.98rem;      /* slightly larger text */
+  box-shadow: 0 8px 20px rgba(37,99,235,0.45);
+}
+
+
+.btn-primary:hover {
+  background: var(--blue-dark);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.45);
+  transform: translateY(-1px);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+}
+
+/* =============== RESPONSIVE =============== */
+
+@media (max-width: 960px) {
+  .service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+.paytm-sidebar {
+  background-color: #1e90ff !important;  /* lighter */
+  border-right: none;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+  .dashboard-grid,
+  .section-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+  .auth-card {
+    width: 100%;
+  }
+}
+@media (max-width: 640px) {
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Fill cards and reduce blank space */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.6fr);
+  grid-auto-rows: minmax(0, auto);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.section-card,
+.transactions-card,
+.quick-actions-card,
+.insights-card,
+.wallet-card {
+  height: 100%;
+}
+
+
+/* Tables a bit bigger */
+.table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+/* Wider grid on Pay/Send */
+.section-grid-wide {
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
+}
+
+/* College services grid fill */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.service-card {
+  padding: 18px 14px 14px;
+}
+
+/* Modern profile layout */
+.profile-grid {
+  grid-template-columns: minmax(0, 1.5fr);
+}
+
+.profile-form .grid-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px 18px;
+}
+
+.profile-form .grid-form input {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+}
+
+.profile-form .grid-form div {
+  margin-bottom: 4px;
+}
+/* Profile: one field per row */
+.profile-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-form-fields div {
+  width: 100%;
+}
+/* DEBUG: force blue sidebar to verify CSS is applied */
+.paytm-sidebar {
+  background-color: #1e90ff !important;
+  border-right: none !important;
+}
