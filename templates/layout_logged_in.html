@@ -51,12 +51,13 @@
   <div class="topbar-left">
     <div class="topbar-title">{% block page_title %}{% endblock %}</div>
   </div>
-  <div class="topbar-right">
-    <div class="user-pill">
-      <div class="avatar-circle">{{ g.user_initial }}</div>
-      <span class="user-name-short">{{ g.user_short_name }}</span>
-    </div>
-  </div>
+<div class="topbar-right">
+  <a href="{{ url_for('profile') }}" class="user-pill" style="text-decoration:none;">
+    <div class="avatar-circle">{{ g.user_initial }}</div>
+    <span class="user-name-short">{{ g.user_short_name }}</span>
+  </a>
+</div>
+
 </header>
 
 

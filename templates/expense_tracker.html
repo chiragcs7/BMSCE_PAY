@@ -1,104 +1,69 @@
 {% extends "layout_logged_in.html" %}
+
 {% block page_title %}Analytics{% endblock %}
 
 {% block page_content %}
-<div class="section-grid">
-  <div class="section-card small-chart-card">
-    <h2 class="section-title">Spending trend</h2>
-    <p class="section-subtitle">Monthly expense overview</p>
-    <div class="chart-wrapper">
-      <canvas id="expenseChart"></canvas>
-    </div>
-  </div>
+<div class="section-card">
+  <h2 class="section-title">College services spending</h2>
+  <p class="section-subtitle">
+    Amount spent in each college service (canteen, bookmart, vending machine,
+    college fees, club events).
+  </p>
 
-  <div class="section-card">
-    <h2 class="section-title">Summary</h2>
-    <div class="insights-row">
-      <div class="insight-item">
-        <span class="insight-label">Total sent (all time)</span>
-        <span class="insight-value negative" id="totalSentText">₹ 0.00</span>
-      </div>
-      <div class="insight-item">
-        <span class="insight-label">Total received (all time)</span>
-        <span class="insight-value positive" id="totalReceivedText">₹ 0.00</span>
-      </div>
-      <div class="insight-item">
-        <span class="insight-label">This month spent</span>
-        <span class="insight-value negative" id="monthSpentText">₹ 0.00</span>
-      </div>
-    </div>
+  <div style="min-height: 260px;">
+    <canvas id="servicesChart"></canvas>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  fetch("/expense-data")
+  const ctx = document.getElementById("servicesChart");
+  if (!ctx) return;
+
+  fetch("{{ url_for('analytics_data') }}")
     .then(r => r.json())
     .then(d => {
-      if (d.error) return;
+      if (d.error) {
+        console.error(d.error);
+        return;
+      }
 
-      const ctx = document.getElementById('expenseChart');
-      if (ctx) {
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: d.labels,
-            datasets: [
-              {
-                label: 'Sent',
-                data: d.sent,
-                backgroundColor: "rgba(239, 68, 68, 0.7)",
-                borderColor: "rgba(220, 38, 38, 1)",
-                borderWidth: 1,
-                borderRadius: 5
-              },
-              {
-                label: 'Received',
-                data: d.received,
-                backgroundColor: "rgba(16, 185, 129, 0.7)",
-                borderColor: "rgba(5, 150, 105, 1)",
-                borderWidth: 1,
-                borderRadius: 5
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: true } },
-            scales: {
-              x: {
-                title: { display: true, text: "Month" }
-              },
-              y: {
-                title: { display: true, text: "Amount (₹)" },
-                grid: { color: "#e5e7eb" }
-              }
-            }
+      const labels = d.labels || [];
+      const values = d.data || [];
+
+      if (!labels.length) {
+        console.log("No college service transactions yet.");
+        return;
+      }
+
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Amount spent (₹)",
+            data: values,
+            backgroundColor: "rgba(37, 99, 235, 0.8)",
+            borderColor: "rgba(30, 64, 175, 1)",
+            borderWidth: 1,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: "#e5e7eb" } },
+            x: { grid: { display: false } }
           }
-        });
-      }
-
-      // Update summary values
-      const totalSentEl = document.getElementById("totalSentText");
-      const totalRecvEl = document.getElementById("totalReceivedText");
-      const monthSpentEl = document.getElementById("monthSpentText");
-
-      if (totalSentEl) {
-        totalSentEl.textContent = "₹ " + d.total_sent.toFixed(2);
-      }
-      if (totalRecvEl) {
-        totalRecvEl.textContent = "₹ " + d.total_received.toFixed(2);
-      }
-      if (monthSpentEl) {
-        monthSpentEl.textContent = "₹ " + d.this_month_spent.toFixed(2);
-      }
-    });
+        }
+      });
+    })
+    .catch(err => console.error(err));
 });
 </script>
 {% endblock %}
-
-
-

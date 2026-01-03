@@ -365,6 +365,27 @@ body {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
 }
+/* Center content inside dashboard cards */
+.center-card {
+  text-align: center;
+}
+
+/* Make the header row center its children */
+.center-card .card-header-inline {
+  justify-content: center;
+}
+
+/* Center the recent transactions title but keep 'View all' on the right */
+.transactions-card.center-card .card-header-inline {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transactions-card.center-card .section-title {
+  margin: 0 auto;
+}
+
+
 
 .section-title {
   font-size: 0.95rem;
@@ -897,3 +918,33 @@ body {
   background-color: #1e90ff !important;
   border-right: none !important;
 }
+.center-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* When there is a single insight item, keep it tight and centered */
+.insights-row.single {
+  justify-content: center;
+}
+/* Center the Recent transactions title while keeping View all on the right */
+.header-center {
+  position: relative;
+}
+
+.header-center .section-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.header-center .view-all-link {
+  margin-left: auto;
+}
+#servicesChart {
+  width: 100% !important;
+  height: 260px !important;
+}
+

@@ -4,9 +4,7 @@
 {% block page_content %}
 <div class="section-card">
   <h2 class="section-title">Money requests</h2>
-  <p class="section-subtitle">
-    These users have requested money from you.
-  </p>
+  <p class="section-subtitle">These users have requested money from you.</p>
 
   <table class="table">
     <thead>
@@ -17,16 +15,31 @@
       </tr>
     </thead>
     <tbody>
-      {% for r in requests %}
-      <tr>
-        <td>{{ r.from_upi }}</td>
-        <td>₹ {{ "%.2f"|format(r.amount) }}</td>
-        <td>{{ r.note or "-" }}</td>
-      </tr>
-      {% else %}
-      <tr><td colspan="3">No pending requests.</td></tr>
-      {% endfor %}
-    </tbody>
+  {% for r in requests %}
+  <tr>
+    <td>{{ r.from_upi }}</td>
+    <td>₹ {{ "%.2f"|format(r.amount) }}</td>
+
+    <td>
+      <a
+        href="{{ url_for('send',
+                         to=r.from_upi,
+                         name=r.from_upi,
+                         amount=r.amount,
+                         ) }}"
+        class="pill-btn primary-btn"
+      >
+        Pay
+      </a>
+    </td>
+  </tr>
+  {% else %}
+  <tr>
+    <td colspan="4">No pending requests.</td>
+  </tr>
+  {% endfor %}
+</tbody>
+
   </table>
 </div>
 {% endblock %}

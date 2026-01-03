@@ -176,7 +176,6 @@ def dashboard():
     uid = user["id"]
     bal = user.get("balance", 0.0)
 
-    # Fetch last 5 transactions
     txns = (
         db.collection("transactions")
         .where("user_id", "==", uid)
@@ -186,33 +185,31 @@ def dashboard():
     )
     latest_txns = [t.to_dict() for t in txns]
 
-    # Simple monthly spend for chart
     now = datetime.utcnow()
     start_of_month = datetime(now.year, now.month, 1)
+
     monthly_stream = (
         db.collection("transactions")
         .where("user_id", "==", uid)
         .where("timestamp", ">=", start_of_month)
         .stream()
     )
-    total_sent = 0.0
-    total_received = 0.0
+
+    this_month_spent = 0.0
     for t in monthly_stream:
         d = t.to_dict()
         amt = float(d.get("amount", 0))
         if d.get("type") == "sent":
-            total_sent += amt
-        elif d.get("type") == "received":
-            total_received += amt
+            this_month_spent += amt
 
     return render_template(
         "dashboard.html",
         user=user,
         balance=bal,
         latest_txns=latest_txns,
-        total_sent=total_sent,
-        total_received=total_received,
+        this_month_spent=this_month_spent,
     )
+
 @app.route("/send", methods=["GET"])
 def send():
     user = get_current_user()
@@ -228,6 +225,9 @@ def send():
         user=user,
         prefill=dict(to=to, name=name, amount=amount, note=note),
     )
+
+
+
 
 @app.route("/make-transaction", methods=["GET", "POST"])
 def make_transaction():
@@ -472,53 +472,48 @@ def expense_tracker():
         return redirect(url_for("login"))
     return render_template("expense_tracker.html", user=user)
 
-@app.route("/expense-data")
-def expense_data():
+@app.route("/analytics-data")
+def analytics_data():
     user = get_current_user()
     if not user:
         return {"error": "Unauthorized"}, 401
 
     uid = user["id"]
-    txns_stream = db.collection("transactions").where("user_id", "==", uid).stream()
 
-    monthly_sent = {}
-    monthly_received = {}
-    total_sent_all = 0.0
-    total_received_all = 0.0
+    # Must match the codes used in pay_service
+    service_codes = {
+        "canteen": "Canteen",
+        "bookmart": "Bookmart",
+        "vending": "Vending Machine",
+        "fees": "College Fees",
+        "events": "Club Events",
+    }
 
-    from datetime import datetime
-    now = datetime.utcnow()
-    this_month_key = f"{now.year}-{now.month:02d}"
-    this_month_spent = 0.0
+    # Get all transactions for this user
+    txns_stream = (
+        db.collection("transactions")
+        .where("user_id", "==", uid)
+        .stream()
+    )
+
+    # Initialize totals per service
+    per_service = {code: 0.0 for code in service_codes}
 
     for t in txns_stream:
         d = t.to_dict()
-        ts = d["timestamp"]
-        key = f"{ts.year}-{ts.month:02d}"
-        amt = float(d.get("amount", 0))
         ttype = d.get("type")
+        to_target = d.get("to")
+        amt = float(d.get("amount", 0.0))
 
-        if ttype == "sent":
-            monthly_sent[key] = monthly_sent.get(key, 0) + amt
-            total_sent_all += amt
-            if key == this_month_key:
-                this_month_spent += amt
-        elif ttype == "received":
-            monthly_received[key] = monthly_received.get(key, 0) + amt
-            total_received_all += amt
+        # Count only college service payments
+        if ttype == "sent" and to_target in per_service:
+            per_service[to_target] += amt
 
-    labels = sorted(set(monthly_sent.keys()) | set(monthly_received.keys()))
-    sent_data = [monthly_sent.get(k, 0) for k in labels]
-    recv_data = [monthly_received.get(k, 0) for k in labels]
+    labels = [service_codes[c] for c in service_codes]
+    data = [per_service[c] for c in service_codes]
 
-    return {
-        "labels": labels,
-        "sent": sent_data,
-        "received": recv_data,
-        "total_sent": total_sent_all,
-        "total_received": total_received_all,
-        "this_month_spent": this_month_spent,
-    }
+    return {"labels": labels, "data": data}
+
 
 
 
@@ -581,6 +576,8 @@ def pay_service(code):
     return render_template("pay_service.html", user=user, service_name=service_name, code=code)
 
 
+
+
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
     user = get_current_user()
@@ -614,3 +611,4 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
