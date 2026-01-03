@@ -238,29 +238,78 @@ def make_transaction():
     if request.method == "POST":
         uid = user["id"]
         from_upi = user["upi_id"]
-        to_upi_or_phone = request.form.get("to").strip()
-        name = request.form.get("name").strip()
-        amount = float(request.form.get("amount"))
-        note = request.form.get("note").strip()
-        pin = request.form.get("pin").strip()
 
-        if pin != user["pin"]:
-            flash("Invalid PIN", "danger")
+        to_upi_or_phone = request.form.get("to", "").strip()
+        name = request.form.get("name", "").strip()
+        amount_raw = request.form.get("amount", "0").strip()
+        note = request.form.get("note", "").strip()
+        pin = request.form.get("pin", "").strip()    # <-- PIN from form
+
+        # Parse amount safely
+        try:
+            amount = float(amount_raw or 0)
+        except ValueError:
+            amount = 0.0
+
+        if amount <= 0:
+            flash("Enter a valid amount.", "danger")
             return redirect(url_for("make_transaction"))
-                # NEW: prevent paying more than balance
+
+        # ----- PIN check -----
+        if pin != user.get("pin"):
+            flash("Invalid PIN.", "danger")
+            return redirect(url_for("make_transaction"))
+
+        # ----- Balance check -----
         current_balance = float(user.get("balance", 0.0))
         if amount > current_balance:
             flash("Payment failed: insufficient wallet balance.", "danger")
             return redirect(url_for("make_transaction"))
 
+        # ----- Find receiver by UPI ID or phone -----
+        recv_doc = None
 
-        # For demo: accept any UPI or phone. In a real app you must resolve UPI/phone to a user.
-        # 1) Sender transaction
+        # 1) Try UPI ID
+        q_upi = (
+            db.collection("users")
+            .where("upi_id", "==", to_upi_or_phone)
+            .limit(1)
+            .stream()
+        )
+        for d in q_upi:
+            recv_doc = d
+            break
+
+        # 2) If not found, try phone
+        if not recv_doc:
+            q_phone = (
+                db.collection("users")
+                .where("phone", "==", to_upi_or_phone)
+                .limit(1)
+                .stream()
+            )
+            for d in q_phone:
+                recv_doc = d
+                break
+
+        # If still not found, block payment
+        if not recv_doc:
+            flash("No user found with that UPI ID or phone number.", "danger")
+            return redirect(url_for("make_transaction"))
+
+        recv_user = recv_doc.to_dict()
+        recv_id = recv_doc.id
+        recv_upi = recv_user.get("upi_id", to_upi_or_phone)
+        recv_name = recv_user.get("name", name or "Friend")
+
+        # ----- Create transactions and update balances -----
+
+        # Sender transaction (money sent)
         sender_txn = {
             "user_id": uid,
             "from_upi": from_upi,
-            "to": to_upi_or_phone,
-            "display_name": name,
+            "to": recv_upi,
+            "display_name": recv_name,
             "amount": amount,
             "note": note,
             "type": "sent",
@@ -268,51 +317,35 @@ def make_transaction():
         }
         db.collection("transactions").add(sender_txn)
 
-        # 2) Decrease sender balance
+        # Decrease sender balance
         db.collection("users").document(uid).update(
             {"balance": firestore.Increment(-amount)}
         )
 
-        # 3) Try to find receiver by UPI ID
-        recv_q = (
-            db.collection("users")
-            .where("upi_id", "==", to_upi_or_phone)
-            .limit(1)
-            .stream()
+        # Receiver transaction (money received)
+        receiver_txn = {
+            "user_id": recv_id,
+            "from_upi": from_upi,
+            "to": recv_upi,
+            "display_name": user.get("name", "Friend"),
+            "amount": amount,
+            "note": note,
+            "type": "received",
+            "timestamp": datetime.utcnow(),
+        }
+        db.collection("transactions").add(receiver_txn)
+
+        # Increase receiver balance
+        db.collection("users").document(recv_id).update(
+            {"balance": firestore.Increment(amount)}
         )
-        recv_doc = None
-        for d in recv_q:
-            recv_doc = d
-            break
 
-        if recv_doc:
-            recv_id = recv_doc.id
-            recv_user = recv_doc.to_dict()
-            recv_name = recv_user.get("name", name)
-
-            # Receiver transaction
-            receiver_txn = {
-                "user_id": recv_id,
-                "from_upi": from_upi,
-                "to": to_upi_or_phone,
-                "display_name": g.get("user_short_name", user["name"]),
-                "amount": amount,
-                "note": note,
-                "type": "received",
-                "timestamp": datetime.utcnow(),
-            }
-            db.collection("transactions").add(receiver_txn)
-
-            # Increase receiver balance
-            db.collection("users").document(recv_id).update(
-                {"balance": firestore.Increment(amount)}
-            )
-
-        flash("Transaction recorded", "success")
+        flash("Payment sent successfully.", "success")
         return redirect(url_for("dashboard"))
 
-
+    # GET request – show form
     return render_template("make_transaction.html", user=user, prefill={})
+
 
 @app.route("/receive", methods=["GET", "POST"])
 def receive():
@@ -403,7 +436,7 @@ def requests_page():
         .where("to_user_id", "==", uid)
         .where("status", "==", "pending")
         .stream()
-    )
+    )   
 
     requests_list = []
     for r in q:

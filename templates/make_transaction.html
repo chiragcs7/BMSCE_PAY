@@ -3,42 +3,45 @@
 
 {% block page_content %}
 <div class="section-grid section-grid-wide">
-  <div class="section-grid section-grid-wide">
-
+  <div class="section-card">
     <h2 class="section-title">Send money</h2>
     <p class="section-subtitle">Pay via UPI ID or phone number</p>
 
-    <form method="POST" class="form-vertical">
+    <form method="POST"
+          action="{{ url_for('make_transaction') }}"
+          class="form-vertical">
+
       <label>UPI ID or Phone</label>
-<input type="text" name="to" value="{{ prefill.to or '' }}" required>
+      <input type="text" name="to" value="{{ prefill.to or '' }}" required>
 
-<label>Name</label>
-<input type="text" name="name" value="{{ prefill.name or '' }}" required>
+      <label>Name</label>
+      <input type="text" name="name" value="{{ prefill.name or '' }}" required>
 
-<label>Amount (₹)</label>
-<input type="number" step="0.01" name="amount" value="{{ prefill.amount or '' }}" required>
+      <label>Amount (₹)</label>
+      <input type="number" step="0.01" name="amount" value="{{ prefill.amount or '' }}" required>
 
-<label>Note</label>
-<input type="text" name="note" value="{{ prefill.note or '' }}" placeholder="eg. Canteen, Books">
+      <label>Note</label>
+      <input type="text" name="note" value="{{ prefill.note or '' }}" placeholder="eg. Canteen, Books">
 
+      <label>PIN</label>
+      <input type="password" name="pin" maxlength="4" required>
 
       <button type="submit" class="btn-primary inline-btn">Pay securely</button>
     </form>
   </div>
 
-<div class="section-card">
-  <h2 class="section-title">Tips</h2>
-  <img src="{{ url_for('static', filename='img/pay.jpg') }}"
-       alt="Pay safely"
-       style="width: 100%; border-radius: 12px; margin-bottom: 10px; object-fit: cover; max-height: 180px;">
-  <ul class="hint-list">
-    <li>Double‑check the receiver name and UPI ID before sending.</li>
-    <li>Use clear notes like “Library fine” or “Club fee”.</li>
-    <li>Never share your PIN or OTP with anyone.</li>
-    <li>Verify QR codes from official counters or staff.</li>
-    <li>Avoid public Wi‑Fi for large payments.</li>
-  </ul>
-</div>
-
+  <div class="section-card">
+    <h2 class="section-title">Tips</h2>
+    <img src="{{ url_for('static', filename='img/pay.jpg') }}"
+         alt="Pay safely"
+         style="width: 100%; border-radius: 12px; margin-bottom: 10px; object-fit: cover; max-height: 180px;">
+    <ul class="hint-list">
+      <li>Double‑check the receiver name and UPI ID or phone before sending.</li>
+      <li>Use clear notes like “Library fine” or “Club fee”.</li>
+      <li>Never share your PIN or OTP with anyone.</li>
+      <li>Verify QR codes or UPI IDs from official sources.</li>
+      <li>Avoid public Wi‑Fi for large payments.</li>
+    </ul>
+  </div>
 </div>
 {% endblock %}
