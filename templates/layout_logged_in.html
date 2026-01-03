@@ -2,77 +2,112 @@
 
 {% block content %}
 <div class="app-shell">
+  <!-- Sidebar -->
   <aside class="paytm-sidebar">
-<div class="sidebar-header">
-  <div class="logo-wrapper">
-    <img src="{{ url_for('static', filename='img/bmslogo.jpg') }}" alt="BMSCE" class="app-logo-img">
-  </div>
-  <div>
-    <div class="app-title">BMSCE Pay</div>
-    <div class="app-subtitle">Student UPI Wallet</div>
-  </div>
-</div>
-
+    <div class="sidebar-header">
+      <div class="logo-wrapper">
+        <img src="{{ url_for('static', filename='img/bmslogo.jpg') }}" alt="BMSCE" class="app-logo-img">
+      </div>
+      <div>
+        <div class="app-title">BMSCE Pay</div>
+        <div class="app-subtitle">Student UPI Wallet</div>
+      </div>
+    </div>
 
     <nav class="sidebar-menu">
-      <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.endpoint=='dashboard' %}active{% endif %}">
-        <i class="fa-solid fa-house"></i><span>Home</span>
+      <a href="{{ url_for('dashboard') }}"
+         class="sidebar-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
       </a>
 
-      <a href="{{ url_for('make_transaction') }}" class="sidebar-link {% if request.endpoint=='make_transaction' %}active{% endif %}">
-        <i class="fa-solid fa-indian-rupee-sign"></i><span>Pay / Send</span>
+      <a href="{{ url_for('make_transaction') }}"
+         class="sidebar-link {% if request.endpoint == 'make_transaction' %}active{% endif %}">
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+        <span>Pay / Send</span>
       </a>
-      <a href="{{ url_for('history') }}" class="sidebar-link {% if request.endpoint=='history' %}active{% endif %}">
-        <i class="fa-solid fa-clock-rotate-left"></i><span>History</span>
+
+      <a href="{{ url_for('history') }}"
+         class="sidebar-link {% if request.endpoint == 'history' %}active{% endif %}">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>History</span>
       </a>
-      <a href="{{ url_for('expense_tracker') }}" class="sidebar-link {% if request.endpoint=='expense_tracker' %}active{% endif %}">
-        <i class="fa-solid fa-chart-line"></i><span>Analytics</span>
+
+      <a href="{{ url_for('expense_tracker') }}"
+         class="sidebar-link {% if request.endpoint == 'expense_tracker' %}active{% endif %}">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Analytics</span>
       </a>
-      <a href="{{ url_for('college_services') }}" class="sidebar-link {% if request.endpoint=='college_services' %}active{% endif %}">
-        <i class="fa-solid fa-building-columns"></i><span>College Services</span>
+
+      <a href="{{ url_for('college_services') }}"
+         class="sidebar-link {% if request.endpoint == 'college_services' %}active{% endif %}">
+        <i class="fa-solid fa-building-columns"></i>
+        <span>College Services</span>
       </a>
-      <a href="{{ url_for('profile') }}" class="sidebar-link {% if request.endpoint=='profile' %}active{% endif %}">
-        <i class="fa-solid fa-user"></i><span>Profile</span>
+
+      <a href="{{ url_for('profile') }}"
+         class="sidebar-link {% if request.endpoint == 'profile' %}active{% endif %}">
+        <i class="fa-solid fa-user"></i>
+        <span>Profile</span>
       </a>
-      <a href="{{ url_for('requests_page') }}" class="sidebar-link {% if request.endpoint=='requests_page' %}active{% endif %}">
-        <i class="fa-solid fa-bell"></i><span>Requests</span>
+
+<a href="{{ url_for('requests_page') }}"
+   class="sidebar-link {% if request.endpoint == 'requests_page' %}active{% endif %}">
+  <i class="fa-solid fa-bell"></i>
+  <span>Requests</span>
+</a>
+
+
+      {# ADMIN LINK – only for admin users #}
+      {% if user.is_admin %}
+      <a href="{{ url_for('admin_users') }}"
+         class="sidebar-link {% if request.endpoint == 'admin_users' %}active{% endif %}">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Admin panel</span>
       </a>
+      {% endif %}
     </nav>
 
     <div class="sidebar-footer">
       <a href="{{ url_for('logout') }}" class="sidebar-link logout-link">
-        <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
       </a>
     </div>
   </aside>
 
+  <!-- Main area -->
   <main class="app-main">
-<header class="topbar">
-  <div class="topbar-left">
-    <div class="topbar-title">{% block page_title %}{% endblock %}</div>
-  </div>
-<div class="topbar-right">
-  <a href="{{ url_for('profile') }}" class="user-pill" style="text-decoration:none;">
-    <div class="avatar-circle">{{ g.user_initial }}</div>
-    <span class="user-name-short">{{ g.user_short_name }}</span>
-  </a>
-</div>
-
-</header>
-
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">
+          {% block pagetitle %}{% endblock %}
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="{{ url_for('profile') }}" class="user-pill" style="text-decoration:none;">
+          <div class="avatar-circle">
+            {{ g.user_initial or user.name[0:1] }}
+          </div>
+          <span class="user-name-short">
+            {{ g.user_short_name or user.name }}
+          </span>
+        </a>
+      </div>
+    </header>
 
     <section class="page-body">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <div class="flash-container">
-          {% for category, msg in messages %}
-            <div class="flash flash-{{ category }}">{{ msg }}</div>
-          {% endfor %}
-        </div>
+          <div class="flash-container">
+            {% for category, msg in messages %}
+              <div class="flash flash-{{ category }}">{{ msg }}</div>
+            {% endfor %}
+          </div>
         {% endif %}
       {% endwith %}
 
-      {% block page_content %}{% endblock %}
+      {% block pagecontent %}{% endblock %}
     </section>
   </main>
 </div>

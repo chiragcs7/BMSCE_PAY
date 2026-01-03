@@ -36,15 +36,19 @@ def generate_upi_id(usn: str) -> str:
     return f"{usn.lower()}@bmscepay"
 
 def get_current_user():
-    uid = session.get("uid")
+    uid = session.get("user_id")
     if not uid:
         return None
     doc = db.collection("users").document(uid).get()
-    if doc.exists:
-        user = doc.to_dict()
-        user["id"] = uid
-        return user
-    return None
+    if not doc.exists:
+        return None
+    user = doc.to_dict()
+    user["id"] = doc.id
+    # IMPORTANT: expose admin flag to templates
+    user["is_admin"] = user.get("is_admin", False)
+    return user
+
+
 
 @app.context_processor
 def inject_current_user():
@@ -157,6 +161,7 @@ def register():
             "food_pref": food_pref,
             "primary_use": primary_use,
             "created_at": datetime.utcnow(),
+            "is_admin": (usn == "1BM24CS000"),
         }
 
         ref = db.collection("users").document()
@@ -575,6 +580,126 @@ def pay_service(code):
 
     return render_template("pay_service.html", user=user, service_name=service_name, code=code)
 
+
+from werkzeug.security import generate_password_hash
+
+def admin_required(user):
+    return user and user.get("is_admin")
+
+@app.route("/admin/users")
+def admin_users():
+    user = get_current_user()
+    if not admin_required(user):
+        flash("Unauthorized", "danger")
+        return redirect(url_for("dashboard"))
+
+    users = []
+    for doc in db.collection("users").stream():
+        u = doc.to_dict()
+        u["id"] = doc.id
+        users.append(u)
+
+    return render_template("admin_users.html", user=user, users=users)
+
+@app.route("/admin/user/<uid>/delete", methods=["POST"])
+def admin_delete_user(uid):
+    user = get_current_user()
+    if not user or not user.get("is_admin"):
+        flash("Unauthorized", "danger")
+        return redirect(url_for("dashboard"))
+
+    # delete user document
+    db.collection("users").document(uid).delete()
+
+    # delete all their transactions
+    txns = db.collection("transactions").where("user_id", "==", uid).stream()
+    for t in txns:
+        t.reference.delete()
+
+    flash("User and transactions deleted", "success")
+    return redirect(url_for("admin_users"))
+
+
+@app.route("/admin/user/<uid>/edit", methods=["GET", "POST"])
+def admin_edit_user(uid):
+    user = get_current_user()
+    if not admin_required(user):
+        flash("Unauthorized", "danger")
+        return redirect(url_for("dashboard"))
+
+    doc = db.collection("users").document(uid).get()
+    if not doc.exists:
+        flash("User not found", "danger")
+        return redirect(url_for("admin_users"))
+
+    target = doc.to_dict()
+    target["id"] = doc.id
+
+    if request.method == "POST":
+        data = {
+            "name": request.form.get("name", "").strip(),
+            "phone": request.form.get("phone", "").strip(),
+            "class": request.form.get("class", "").strip(),
+            "batch": request.form.get("batch", "").strip(),
+            "year": request.form.get("year", "").strip(),
+        }
+        db.collection("users").document(uid).update(data)
+        flash("User profile updated", "success")
+        return redirect(url_for("admin_edit_user", uid=uid))
+
+    return render_template("admin_edit_user.html", user=user, target=target)
+
+@app.route("/admin/user/<uid>/reset_password", methods=["POST"])
+def admin_reset_password(uid):
+    user = get_current_user()
+    if not admin_required(user):
+        flash("Unauthorized", "danger")
+        return redirect(url_for("dashboard"))
+
+    new_password = request.form.get("new_password")
+    if not new_password:
+        flash("Password required", "danger")
+        return redirect(url_for("admin_edit_user", uid=uid))
+
+    pw_hash = generate_password_hash(new_password)
+    db.collection("users").document(uid).update({"password_hash": pw_hash})
+
+    flash("Password reset for user", "success")
+    return redirect(url_for("admin_edit_user", uid=uid))
+
+@app.route("/admin/user/<uid>/transactions")
+def admin_user_transactions(uid):
+    user = get_current_user()
+    if not admin_required(user):
+        flash("Unauthorized", "danger")
+        return redirect(url_for("dashboard"))
+
+    doc = db.collection("users").document(uid).get()
+    if not doc.exists:
+        flash("User not found", "danger")
+        return redirect(url_for("admin_users"))
+
+    target = doc.to_dict()
+    target["id"] = doc.id
+
+    txns = (
+        db.collection("transactions")
+        .where("user_id", "==", uid)
+        .order_by("timestamp", direction=firestore.Query.DESCENDING)
+        .stream()
+    )
+    txn_list = []
+    for t in txns:
+        item = t.to_dict()
+        item["id"] = t.id
+        txn_list.append(item)
+
+    return render_template(
+        "admin_user_transactions.html",
+        user=user,
+        target=target,
+        transactions=txn_list,
+    )
 
 
 

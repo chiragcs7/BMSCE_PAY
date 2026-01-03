@@ -328,9 +328,10 @@ body {
 }
 
 .pill-btn.primary-btn {
-  background: #f97316;
+  background: var(--blue-main);  /* blue */
   color: #ffffff;
 }
+
 
 /* Cards */
 

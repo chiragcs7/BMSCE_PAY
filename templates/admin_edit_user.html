@@ -1,0 +1,34 @@
+{% extends "layout_logged_in.html" %}
+{% block content %}
+<div class="section-card">
+  <h2 class="section-title">Edit user: {{ target.usn }}</h2>
+
+  <form method="post" class="form-vertical">
+    <label>Name</label>
+    <input type="text" name="name" value="{{ target.name }}">
+
+    <label>Phone</label>
+    <input type="text" name="phone" value="{{ target.phone }}">
+
+    <label>Class</label>
+    <input type="text" name="class" value="{{ target.class }}">
+
+    <label>Batch</label>
+    <input type="text" name="batch" value="{{ target.batch }}">
+
+    <label>Year</label>
+    <input type="text" name="year" value="{{ target.year }}">
+
+    <button type="submit" class="btn-primary inline-btn">Save</button>
+  </form>
+
+  <hr>
+
+  <h3 class="section-subtitle">Reset password</h3>
+  <form method="post" action="{{ url_for('admin_reset_password', uid=target.id) }}" class="form-vertical">
+    <label>New password</label>
+    <input type="password" name="new_password">
+    <button type="submit" class="btn-primary inline-btn">Reset password</button>
+  </form>
+</div>
+{% endblock %}

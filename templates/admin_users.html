@@ -1,0 +1,39 @@
+{% extends "layout_logged_in.html" %}
+
+{% block pagetitle %}Admin{% endblock %}
+
+{% block pagecontent %}
+<div class="section-card">
+  <h2 class="section-title">All users</h2>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>USN</th>
+        <th>Balance (₹)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for u in users %}
+      <tr>
+        <td>{{ u.name }}</td>
+        <td>{{ u.usn }}</td>
+        <td>{{ '%.2f'|format(u.balance or 0) }}</td>
+        <td>
+          <a href="{{ url_for('admin_edit_user', uid=u.id) }}">Edit</a> |
+          <a href="{{ url_for('admin_user_transactions', uid=u.id) }}">Txns</a> |
+          <form action="{{ url_for('admin_delete_user', uid=u.id) }}"
+                method="post"
+                style="display:inline"
+                onsubmit="return confirm('Delete this user and all transactions?');">
+            <button type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

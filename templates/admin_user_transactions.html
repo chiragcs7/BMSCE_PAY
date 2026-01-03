@@ -1,0 +1,29 @@
+{% extends "layout_logged_in.html" %}
+{% block content %}
+<div class="section-card">
+  <h2 class="section-title">Transactions of {{ target.name }} ({{ target.usn }})</h2>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Type</th>
+        <th>To/From</th>
+        <th>Amount</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for t in transactions %}
+      <tr>
+        <td>{{ t.timestamp }}</td>
+        <td>{{ t.type }}</td>
+        <td>{{ t.display_name or t.to }}</td>
+        <td>{{ t.amount }}</td>
+        <td>{{ t.note }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
