@@ -119,6 +119,16 @@ def scan_pay():
     return render_template("scan_pay.html", user=user)
 
 
+import re  # ensure this is at the top with other imports
+
+def is_strong_password(password: str) -> bool:
+    """At least one uppercase, one lowercase, one digit, one special char."""
+    if not password:
+        return False
+    pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$'
+    return re.match(pattern, password) is not None
+
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -134,6 +144,12 @@ def register():
         year = request.form.get("year", "").strip()
         pin = request.form.get("pin", "").strip()
         password = request.form.get("password", "").strip()
+        if not is_strong_password(password):
+            flash(
+                "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+                "danger",
+            )
+            return render_template("register.html")
         residence_type = request.form.get("residence_type", "").strip()
         food_pref = request.form.get("food_pref", "").strip()
         primary_use = request.form.get("primary_use", "").strip()
