@@ -3,6 +3,16 @@
 {% block page_content %}
 <div class="auth-shell">
   <div class="auth-card light-card wide-card">
+        {# MOVE FLASH MESSAGES HERE #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-container login-flash">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
     <div class="auth-header">
       <img src="{{ url_for('static', filename='img/bmslogo.jpg') }}" class="auth-logo" alt="BMSCE">
       <div>
