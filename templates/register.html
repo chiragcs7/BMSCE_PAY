@@ -3,16 +3,18 @@
 {% block page_content %}
 <div class="auth-shell">
   <div class="auth-card light-card wide-card">
-        {# MOVE FLASH MESSAGES HERE #}
+
+    {# Flash messages #}
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-      <div class="flash-container login-flash">
-        {% for category, msg in messages %}
-          <div class="flash flash-{{ category }}">{{ msg }}</div>
-        {% endfor %}
-      </div>
+        <div class="flash-container login-flash">
+          {% for category, msg in messages %}
+            <div class="flash flash-{{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
       {% endif %}
     {% endwith %}
+
     <div class="auth-header">
       <img src="{{ url_for('static', filename='img/bmslogo.jpg') }}" class="auth-logo" alt="BMSCE">
       <div>
@@ -21,86 +23,140 @@
       </div>
     </div>
 
-    <!-- Step 1: basic academic details -->
-    <h3 class="auth-section-title">Step 1 · College details</h3>
+    <!-- Step 1 basic academic details -->
+    <h3 class="auth-section-title">Step 1 College details</h3>
+
     <form method="POST" class="grid-form">
       <div>
         <label>Name</label>
-        <input type="text" name="name" required>
+        <input type="text" name="name" required
+               value="{{ form_data.name if form_data is defined else '' }}">
       </div>
+
       <div>
         <label>College ID</label>
-        <input type="text" name="college_id" required>
+        <input type="text" name="collegeid" required
+               value="{{ form_data.collegeid if form_data is defined else '' }}">
       </div>
+
       <div>
         <label>Phone</label>
-        <input type="tel" name="phone" required>
+        <input type="tel" name="phone" required
+               value="{{ form_data.phone if form_data is defined else '' }}">
       </div>
+
       <div>
         <label>USN</label>
-        <input type="text" name="usn" required>
+        <input type="text" name="usn" required
+               value="{{ form_data.usn if form_data is defined else '' }}">
       </div>
+
       <div>
         <label>Branch</label>
-        <input type="text" name="class" placeholder="CSE A, ISE B, etc." required>
+        <input type="text" name="class" placeholder="CSE A, ISE B, etc." required
+               value="{{ form_data.class if form_data is defined else '' }}">
       </div>
+
       <div>
         <label>Semester</label>
         <select name="semester" required>
-          <option value="" disabled selected>Select semester</option>
-          {% for i in range(1,9) %}
-          <option value="{{ i }}">{{ i }}</option>
+          <option value="" disabled {% if form_data is not defined %}selected{% endif %}>Select semester</option>
+          {% for i in range(1, 9) %}
+            <option value="{{ i }}"
+              {% if form_data is defined and form_data.semester == i|string %}selected{% endif %}>
+              {{ i }}
+            </option>
           {% endfor %}
         </select>
       </div>
+
       <div>
         <label>Year</label>
         <select name="year" required>
-          <option value="" disabled selected>Select year</option>
-          <option value="1">1st year</option>
-          <option value="2">2nd year</option>
-          <option value="3">3rd year</option>
-          <option value="4">4th year</option>
+          <option value="" disabled {% if form_data is not defined %}selected{% endif %}>Select year</option>
+          <option value="1" {% if form_data is defined and form_data.year == '1' %}selected{% endif %}>1st year</option>
+          <option value="2" {% if form_data is defined and form_data.year == '2' %}selected{% endif %}>2nd year</option>
+          <option value="3" {% if form_data is defined and form_data.year == '3' %}selected{% endif %}>3rd year</option>
+          <option value="4" {% if form_data is defined and form_data.year == '4' %}selected{% endif %}>4th year</option>
         </select>
       </div>
 
-      <!-- Step 2: security & more details -->
+      <!-- Step 2 security & more details -->
       <div>
         <label>PIN (4 digits)</label>
-        <input type="password" name="pin" maxlength="4" required>
+        <input type="password" name="pin" maxlength="4" required
+               value="{{ form_data.pin if form_data is defined else '' }}">
       </div>
+
       <div>
         <label>Login password</label>
+        {# Always blank on re-render so only password is cleared #}
         <input type="password" name="password" required>
       </div>
+
       <div>
         <label>Hostel / Day scholar</label>
-        <select name="residence_type">
-          <option value="day">Day scholar</option>
-          <option value="hostel">Hostel</option>
-        </select>
-      </div>
-      <div>
-        <label>Food preference</label>
-        <select name="food_pref">
-          <option value="veg">Veg</option>
-          <option value="non-veg">Non‑veg</option>
-          <option value="both">Both</option>
-        </select>
-      </div>
-      <div>
-        <label>Primary payment use</label>
-        <select name="primary_use">
-          <option value="canteen">Canteen</option>
-          <option value="books">Books & stationery</option>
-          <option value="fees">Fees</option>
-          <option value="events">Club & events</option>
-          <option value="mixed">Mixed</option>
+        <select name="residencetype">
+          <option value="day"
+            {% if form_data is defined and form_data.residencetype == 'day' %}selected{% endif %}>
+            Day scholar
+          </option>
+          <option value="hostel"
+            {% if form_data is defined and form_data.residencetype == 'hostel' %}selected{% endif %}>
+            Hostel
+          </option>
         </select>
       </div>
 
-      <button type="submit" class="btn-primary full-width">Create account</button>
+      <div>
+        <label>Food preference</label>
+        <select name="foodpref">
+          <option value="veg"
+            {% if form_data is defined and form_data.foodpref == 'veg' %}selected{% endif %}>
+            Veg
+          </option>
+          <option value="non-veg"
+            {% if form_data is defined and form_data.foodpref == 'non-veg' %}selected{% endif %}>
+            Non-veg
+          </option>
+          <option value="both"
+            {% if form_data is defined and form_data.foodpref == 'both' %}selected{% endif %}>
+            Both
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label>Primary payment use</label>
+        <select name="primaryuse">
+          <option value="canteen"
+            {% if form_data is defined and form_data.primaryuse == 'canteen' %}selected{% endif %}>
+            Canteen
+          </option>
+          <option value="books"
+            {% if form_data is defined and form_data.primaryuse == 'books' %}selected{% endif %}>
+            Books stationery
+          </option>
+          <option value="fees"
+            {% if form_data is defined and form_data.primaryuse == 'fees' %}selected{% endif %}>
+            Fees
+          </option>
+          <option value="events"
+            {% if form_data is defined and form_data.primaryuse == 'events' %}selected{% endif %}>
+            Club events
+          </option>
+          <option value="mixed"
+            {% if form_data is defined and form_data.primaryuse == 'mixed' %}selected{% endif %}>
+            Mixed
+          </option>
+        </select>
+      </div>
+
+      <div class="full-width">
+        <button type="submit" class="btn-primary full-width">Create account</button>
+      </div>
     </form>
+
   </div>
 </div>
 {% endblock %}

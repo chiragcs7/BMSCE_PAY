@@ -134,58 +134,87 @@ def is_strong_password(password: str) -> bool:
 def register():
     if request.method == "POST":
         name = request.form.get("name", "").strip()
-        college_id = request.form.get("college_id", "").strip()
+        collegeid = request.form.get("collegeid", "").strip()
         phone = request.form.get("phone", "").strip()
         usn = request.form.get("usn", "").strip()
-        class_name = request.form.get("class", "").strip()
-
-        # new fields
+        classname = request.form.get("class", "").strip()
         semester = request.form.get("semester", "").strip()
         year = request.form.get("year", "").strip()
         pin = request.form.get("pin", "").strip()
         password = request.form.get("password", "").strip()
+        residencetype = request.form.get("residencetype", "").strip()
+        foodpref = request.form.get("foodpref", "").strip()
+        primaryuse = request.form.get("primaryuse", "").strip()
+        upiid = generate_upi_id(usn)
+
+        # password check MUST be after password is read:
         if not is_strong_password(password):
             flash(
                 "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
                 "danger",
             )
-            return render_template("register.html")
-        residence_type = request.form.get("residence_type", "").strip()
-        food_pref = request.form.get("food_pref", "").strip()
-        primary_use = request.form.get("primary_use", "").strip()
+            return render_template(
+                "register.html",
+                form_data={
+                    "name": name,
+                    "collegeid": collegeid,
+                    "phone": phone,
+                    "usn": usn,
+                    "class": classname,
+                    "semester": semester,
+                    "year": year,
+                    "pin": pin,
+                    "residencetype": residencetype,
+                    "foodpref": foodpref,
+                    "primaryuse": primaryuse,
+                },
+            )
 
-        upi_id = generate_upi_id(usn)
-
-        # Simple uniqueness check on USN
+        # Existing USN duplicate check
         q = db.collection("users").where("usn", "==", usn).stream()
         for _ in q:
             flash("USN already registered", "danger")
-            return render_template("register.html")
+            return render_template(
+                "register.html",
+                form_data={
+                    "name": name,
+                    "collegeid": collegeid,
+                    "phone": phone,
+                    "usn": usn,
+                    "class": classname,
+                    "semester": semester,
+                    "year": year,
+                    "pin": pin,
+                    "residencetype": residencetype,
+                    "foodpref": foodpref,
+                    "primaryuse": primaryuse,
+                },
+            )
 
-        user_doc = {
+        userdoc = {
             "name": name,
-            "college_id": college_id,
+            "collegeid": collegeid,
             "phone": phone,
             "usn": usn,
-            "class": class_name,
+            "class": classname,
             "semester": semester,
             "year": year,
             "pin": pin,
-            "password": password,   # remember: for a real app hash this
-            "upi_id": upi_id,
-            "residence_type": residence_type,
-            "food_pref": food_pref,
-            "primary_use": primary_use,
+            "password": password,  # your existing logic
+            "upi_id": upiid,
+            "residencetype": residencetype,
+            "foodpref": foodpref,
+            "primaryuse": primaryuse,
             "created_at": datetime.utcnow(),
-            "is_admin": (usn == "1BM24CS000"),
+            "is_admin": usn == "1BM24CS000",
         }
-
         ref = db.collection("users").document()
-        ref.set(user_doc)
+        ref.set(userdoc)
         create_fake_balance(ref.id)
-        flash(f"Account created! Your UPI ID is {upi_id}", "success")
+        flash(f"Account created! Your UPI ID is {upiid}", "success")
         return redirect(url_for("login"))
 
+    # GET request: just show empty form
     return render_template("register.html")
 
 @app.route("/dashboard")
