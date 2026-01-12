@@ -1,0 +1,22 @@
+{
+  "type": "service_account",
+  "project_id": "bmsce-pay",
+  "private_key_id": "4843b510d694ec504ae56c49f9a0ad4d3287c0d5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC9rRlRE21T8j35\n9+xwXvfojwukualhX6QIEHUPRdKECX4Sux7p2+h7DZYFVnoui9xBBeuphzVe6m9k\neJIZJSURNYu7lJ8VpI9plIfMAUG3+LPLgx4SlPwE2OUvHqxB/t6Ch8Mi1k75kvAp\nnp8WlATAf7Yd3lSNgVLCUBcjmniocK5zLbMTHxyBRDX+3gpvZGQn7IO4V9zpe/IW\nes6qj0V9ELqLfK6yYRVK53GH4pRBYrMAqRlNdAPNzoJOb88sUW2nFmxCyi6OFxlU\nJA9SUZ51+WOZnp1TJ1kPxj/rzIT1fz+EQKcIu1PjqodauYVRSVgrrAYuwhJkv++B\n/jc0MOUJAgMBAAECggEABtpnWBDgU6oLFJ1Ue1aBe4zlKhot/tKShFrf3kgZP2PY\nAvvXnDIYKyk5Z4KReJDdSbLzXSIBZI2kFH7v750/D4LRRFsUbzCnOkFysWuSmplc\nTN9oaabc/wNwYgYoMCkLlHv5dqh3aWumZlwqU4nQLPDDij6IH7+LJD7GwnN1P5Sx\n8jBMEbufkvMwfZnkFRAE8O8HTae+obKsqIaGM53ixbqI8A/QrIG/HtJIXnoQmO0n\ny2N5P0Zr/bDGNIKEu89IYcLRSiahgdbicyutD50QAAtGqoqARYfPHuKnPwQ/7xEG\nyYvNKs0dCtRNWrIf9UpVSjsFnM/RQQHrEx3DeNYYGQKBgQDj2rzO2Gf+CZfrn6BM\nXLxxlsf3iFZgndtX03gSlQ6wNZc0R3St93JcyOnbA+SDnWjf6eAhLYpmWveIF4pq\nwAA6jWusHXDA92RgwBqoAdaOEZsi09IqA9R3EYBnaCUnKtemoPW0+IroJ2CDSivp\n1ml2K9yiJRAEvsqRGt4IBlr4jQKBgQDVGxRlFeogNgJjFm3lzGpCDnWeByJPWS8c\nUkGnQc7mr7zfGi+Zxap3XM9viNfRSZaFVGFZpdiMNs79BCrDc3u4ouT8QoxgE+pF\nPNoUSPQbAg2Wy8qnhl2zB5sUEOSCax6qrORE/wXfsUoM0m8SC6YvaW9WvIK5rKoa\nRv2RYLeVbQKBgQDQ2qdGUkbALLr8V4zvcfGpjLQuyOGkHg34KvZc0hRsoDLA0N66\nt540PlVdU+waWCbRV+cBgmTh/W/3ZtyRjPyorwiK81FvD1UK+gt1BHpOLwUsn0x9\nBpWxrnEsV+H2TObu7YtLHqb0tWNZ9Jrb9JUmpH3Qgnh0YQ38g8wRPwIT4QKBgQCj\ntnD9k09QvY0p6DI3Jsm+w3LyGxLtmFsLy9lqD7FOIVXcozZMUME7f45QZfU+b+T1\nurQq9bCdTwHG+GuNyWsTlfiKHunOaZ5A4JW8nasCEJq17QtblWroPYCScsPJuVdO\n0RFwO+acSYvUu9jeKRrbM4l4PcvDrnTjSQRFqeJ/JQKBgBQ+TXE/WaUi4mCERLO0\nS4KjInfJx3Jsq/xCx/QE0MeO8+HhZiQEjN9jHBhebr3bmtDNKZ3F+8ypYVIMtpTT\nMUypYi5BVl+F7c+lSTbPpVdgzXVD8FGFhZmGy1xrwCilvvKCWDZ4Rc0aalVhWWLv\n9qMUiP5mEl2laqiZDQtThk9p\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@bmsce-pay.iam.gserviceaccount.com",
+  "client_id": "100104337504718654739",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40bmsce-pay.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com",
+  "pyrebase": {
+    "apiKey": "AIzaSyANsYW53fHvXyFGCR9iWC2wKppTohCwWiI",
+    "authDomain": "bmsce-pay.firebaseapp.com",
+    "projectId": "bmsce-pay",
+    "storageBucket": "bmsce-pay.firebasestorage.app",
+    "messagingSenderId": "843192070996",
+    "appId": "1:843192070996:web:e496767b77628926fbcec1",
+    "databaseURL": ""
+  }
+}
